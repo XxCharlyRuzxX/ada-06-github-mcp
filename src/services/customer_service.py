@@ -14,7 +14,7 @@ class CustomerSearchService:
         """Initialize service with customer repository."""
         self.repository = repository or CustomerRepository()
 
-    def search(self, query: str) -> List[Customer]:
+    def search(self, query: str, limit: Optional[int] = 50) -> List[Customer]:
         """Search customers by matching sanitized query against name or email.
 
         Validation rules:
@@ -23,6 +23,7 @@ class CustomerSearchService:
 
         Matching rules:
         - Case-insensitive substring matching against customer name and email.
+        - Results are capped by limit parameter if provided.
         """
         if query is None:
             raise InvalidQueryException("Query string must be at least 2 characters long")
@@ -43,4 +44,6 @@ class CustomerSearchService:
             for customer in all_customers
             if q_lower in customer.name.lower() or q_lower in str(customer.email).lower()
         ]
+        if limit is not None:
+            results = results[:limit]
         return results

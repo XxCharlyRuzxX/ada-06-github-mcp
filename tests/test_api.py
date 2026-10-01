@@ -92,3 +92,17 @@ class TestCustomerSearchAPI:
         duration_ms = (time.perf_counter() - start) * 1000
         assert response.status_code == 200
         assert duration_ms < 150, f"Response took {duration_ms:.2f}ms which exceeds 150ms limit"
+
+    def test_search_limit_success(self):
+        response = client.get("/api/v1/customers/search?q=example.com&limit=1")
+        assert response.status_code == 200
+        data = response.json()
+        assert len(data) == 1
+
+    def test_search_limit_invalid_values(self):
+        response_zero = client.get("/api/v1/customers/search?q=doe&limit=0")
+        assert response_zero.status_code == 422
+
+        response_too_large = client.get("/api/v1/customers/search?q=doe&limit=101")
+        assert response_too_large.status_code == 422
+
