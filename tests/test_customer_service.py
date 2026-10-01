@@ -187,3 +187,12 @@ class TestCustomerSearchService:
         results = service.search("company")
         assert len(results) == 1
         assert results[0].id == "mock-1"
+
+    def test_search_with_limit(self):
+        service = CustomerSearchService()
+        all_matches = service.search("example.com", limit=None)
+        assert len(all_matches) > 1
+
+        limited_matches = service.search("example.com", limit=1)
+        assert len(limited_matches) == 1
+
